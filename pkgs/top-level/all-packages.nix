@@ -14822,7 +14822,7 @@ in
   mod_wsgi = pkgs.apacheHttpdPackages.mod_wsgi;
 
   inherit (callPackages ../servers/mpd { })
-    mpd mpd-small;
+    mpd mpd-small mpdWithFeatures;
 
   mpd_clientlib = callPackage ../servers/mpd/clientlib.nix { };
 
