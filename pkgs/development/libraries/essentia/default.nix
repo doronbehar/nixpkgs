@@ -1,0 +1,83 @@
+{ stdenv
+, lib
+, fetchFromGitHub
+, fetchpatch
+, libyaml
+, fftwFloat
+, ffmpeg
+, chromaprint
+, taglib
+, libsamplerate
+, pkgconfig
+# This one is not listed in upstream's instructions but it seems to be a
+# requirement since the build fails with the error:
+# [290/290] Linking build/src/libessentia.so
+# /nix/store/cl1i6bfqnx48ipakj4px7pb1babzs23j-binutils-2.31.1/bin/ld: cannot find -lQtCore
+# Probably because gaia which depends on qt4
+, qt4
+, wafHook
+, pythonSupport ? true
+, python
+, gaiaSupport ? true
+, gaia
+, withVamp ? true
+, withExamples ? true
+}:
+
+assert pythonSupport -> python != null;
+assert gaiaSupport -> gaia != null;
+
+stdenv.mkDerivation rec {
+  pname = "essentia";
+  # other versions fail to build
+  version = "2.1_beta5";
+
+  src = fetchFromGitHub {
+    owner = "MTG";
+    repo = "essentia";
+    rev = "v${version}";
+    sha256 = "0ig267wfxry2rjpij4fypf2zk7f59jd0n23l3807igbn2cmkgz4w";
+  };
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/MTG/essentia/pull/915.patch";
+      sha256 = "00m8kpdpqazgnvdcbnp6lh3px71l542ggaz6f71aylxzp02sva8p";
+    })
+  ];
+
+  nativeBuildInputs = [
+    wafHook
+    pkgconfig
+  ];
+  buildInputs = [
+    libyaml
+    fftwFloat
+    taglib
+    ffmpeg
+    qt4
+    libsamplerate
+    chromaprint
+  ]
+    ++ lib.optionals (pythonSupport) [
+      (python.withPackages(ps: with ps; [
+        pyyaml
+        numpy
+      ]))
+    ]
+    ++ lib.optionals (gaiaSupport) [ gaia ]
+  ;
+  wafConfigureFlags = [
+  ]
+    ++ lib.optionals (pythonSupport) [ "--with-python" ]
+    ++ lib.optionals (gaiaSupport) [ "--with-gaia" ]
+    ++ lib.optionals (withVamp) [ "--with-vamp" ]
+    ++ lib.optionals (withExamples) [ "--with-examples" ]
+  ;
+
+  meta = with lib; {
+    homepage = "https://github.com/MTG/essentia";
+    description = "C++ library with python bindings which implements similarity measures and classiﬁcations on the results of audio analysis, and generates classiﬁcation models that Essentia can use to compute high-level description of music";
+    maintainers = with maintainers; [ doronbehar ];
+    license = licenses.agpl3;
+  };
+}

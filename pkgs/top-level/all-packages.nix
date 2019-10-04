@@ -1703,6 +1703,10 @@ in
 
   eschalot = callPackage ../tools/security/eschalot { };
 
+  essentia = callPackage ../development/libraries/essentia { 
+    taglib = taglib_1_9;
+  };
+
   esphome = callPackage ../servers/home-assistant/esphome.nix { };
 
   esptool = callPackage ../tools/misc/esptool { };

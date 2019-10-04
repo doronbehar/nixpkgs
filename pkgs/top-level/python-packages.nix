@@ -5611,6 +5611,11 @@ in {
 
   transitions = callPackage ../development/python-modules/transitions { };
 
+  essentia = (toPythonModule (pkgs.essentia.override {
+    pythonPackages = python;
+    pythonSupport = true;
+  }));
+
   extras = callPackage ../development/python-modules/extras { };
 
   texttable = callPackage ../development/python-modules/texttable { };
