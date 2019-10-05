@@ -9,16 +9,16 @@
 , taglib
 , libsamplerate
 , pkgconfig
+, wafHook
+, pythonSupport ? false
+, pythonPackages
+, gaiaSupport ? true
 # This one is not listed in upstream's instructions but it seems to be a
 # requirement since the build fails with the error:
 # [290/290] Linking build/src/libessentia.so
 # /nix/store/cl1i6bfqnx48ipakj4px7pb1babzs23j-binutils-2.31.1/bin/ld: cannot find -lQtCore
 # Probably because gaia which depends on qt4
 , qt4
-, wafHook
-, pythonSupport ? false
-, pythonPackages
-, gaiaSupport ? true
 , gaia
 , withVamp ? true
 , withExamples ? true
@@ -26,6 +26,7 @@
 
 assert pythonSupport -> pythonPackages != null;
 assert gaiaSupport -> gaia != null;
+assert gaiaSupport -> qt4 != null;
 
 stdenv.mkDerivation rec {
   pname = "essentia";
@@ -56,7 +57,6 @@ stdenv.mkDerivation rec {
     fftwFloat
     taglib
     ffmpeg
-    qt4
     libsamplerate
     chromaprint
   ]
@@ -66,7 +66,7 @@ stdenv.mkDerivation rec {
         numpy
       ]))
     ]
-    ++ lib.optionals (gaiaSupport) [ gaia ]
+    ++ lib.optionals (gaiaSupport) [ gaia qt4 ]
   ;
   wafConfigureFlags = [
   ]
