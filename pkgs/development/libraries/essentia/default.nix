@@ -16,15 +16,15 @@
 # Probably because gaia which depends on qt4
 , qt4
 , wafHook
-, pythonSupport ? true
-, python
+, pythonSupport ? false
+, pythonPackages
 , gaiaSupport ? true
 , gaia
 , withVamp ? true
 , withExamples ? true
 }:
 
-assert pythonSupport -> python != null;
+assert pythonSupport -> pythonPackages != null;
 assert gaiaSupport -> gaia != null;
 
 stdenv.mkDerivation rec {
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
     chromaprint
   ]
     ++ lib.optionals (pythonSupport) [
-      (python.withPackages(ps: with ps; [
+      (pythonPackages.python.withPackages(ps: with ps; [
         pyyaml
         numpy
       ]))

@@ -5612,8 +5612,10 @@ in {
   transitions = callPackage ../development/python-modules/transitions { };
 
   essentia = (toPythonModule (pkgs.essentia.override {
-    pythonPackages = python;
+    pythonPackages = self;
     pythonSupport = true;
+    # Use our gaia
+    gaia = self.gaia;
   }));
 
   extras = callPackage ../development/python-modules/extras { };
