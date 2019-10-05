@@ -40,6 +40,8 @@ stdenv.mkDerivation rec {
   };
   patches = [
     (fetchpatch {
+      # Make waf use ${PREFIX} to install examples - otherwise, our build fail
+      # when trying to write to /usr/local/
       url = "https://github.com/MTG/essentia/pull/915.patch";
       sha256 = "00m8kpdpqazgnvdcbnp6lh3px71l542ggaz6f71aylxzp02sva8p";
     })
