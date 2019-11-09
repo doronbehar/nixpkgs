@@ -1,6 +1,14 @@
 {
-  "name": "citeproc-build-deps",
-  "version": "1.6.0",
+  "name": "citeproc",
+  "version": "0.1.0",
+  "description": "Render BibTeX citations",
+  "repository": "https://github.com/latex-lsp/citeproc.git",
+  "author": "Eric Förster <efoerster@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "dist": "webpack",
+    "format": "prettier --write \"src/**/*.{js,json}\" \"*.{js,json,yml,md}\" \".vscode/**/*.{json}\""
+  },
   "dependencies": {
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
@@ -12,8 +20,11 @@
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",
     "null-loader": "^0.1.1",
+    "prettier": "^1.18.2",
     "ts-loader": "^5.4.5",
     "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.15.0",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6"
   }
