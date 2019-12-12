@@ -17220,6 +17220,11 @@ in
 
   elliptic_curves = callPackage ../data/misc/elliptic_curves { };
 
+  equalx = callPackage ../tools/typesetting/equalx {
+    pdflatex = texlive.combined.scheme-basic;
+  };
+  # equalx = libsForQt5.callPackage ../tools/typesetting/equalx { };
+
   equilux-theme = callPackage ../data/themes/equilux-theme { };
 
   eunomia = callPackage ../data/fonts/eunomia { };
