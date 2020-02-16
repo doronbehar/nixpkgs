@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
   };
   patches = [
     (fetchpatch {
-      # Make waf use ${PREFIX} to install examples - otherwise, our build fail
+      # Make waf use ${PREFIX} to install examples - otherwise, our build fails
       # when trying to write to /usr/local/
       url = "https://github.com/MTG/essentia/pull/915.patch";
       sha256 = "00m8kpdpqazgnvdcbnp6lh3px71l542ggaz6f71aylxzp02sva8p";
@@ -79,7 +79,7 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     homepage = "https://github.com/MTG/essentia";
     description = "Library for audio and music analysis, description and synthesis";
-    maintainers = with maintainers; [ doronbehar ];
+    maintainers = with maintainers; [ doronbehar lovesegfault ];
     platforms = platforms.all;
     license = licenses.agpl3;
   };
