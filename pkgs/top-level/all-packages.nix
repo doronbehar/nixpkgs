@@ -3405,6 +3405,8 @@ in
 
   libbladeRF = callPackage ../development/libraries/libbladeRF { };
 
+  LPCNet = callPackage ../development/libraries/LPCNet { };
+
   lp_solve = callPackage ../applications/science/math/lp_solve { };
 
   lprof = callPackage ../tools/graphics/lprof { };
