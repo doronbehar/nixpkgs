@@ -23351,6 +23351,8 @@ in
 
   flock = callPackage ../development/tools/flock { };
 
+  freedv = callPackage ../applications/radio/freedv { };
+
   freecell-solver = callPackage ../games/freecell-solver { };
 
   freeciv = callPackage ../games/freeciv { };
