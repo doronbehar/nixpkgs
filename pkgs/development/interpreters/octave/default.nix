@@ -91,6 +91,7 @@ stdenv.mkDerivation rec {
     qtsvg
     qscintilla
   ])
+  ++ (stdenv.lib.optional (sundials != null) sundials)
   ++ (stdenv.lib.optional (ghostscript != null) ghostscript)
   ++ (stdenv.lib.optional (hdf5 != null) hdf5)
   ++ (stdenv.lib.optional (glpk != null) glpk)
@@ -112,7 +113,6 @@ stdenv.mkDerivation rec {
     fftwSinglePrec
     texinfo
   ]
-  ++ (stdenv.lib.optional (sundials != null) sundials)
   ++ (stdenv.lib.optional enableJIT llvmPackages_latest.llvm)
   ++ (stdenv.lib.optionals enableQt [
     qtscript
