@@ -67,7 +67,6 @@ stdenv.mkDerivation rec {
   buildInputs = [
     readline
     ncurses
-    perl
     flex
     qhull
     graphicsmagick
@@ -107,6 +106,7 @@ stdenv.mkDerivation rec {
   ;
   nativeBuildInputs = [
     pkgconfig
+    perl
     gfortran
     # Listed here as well because it's outputs are split
     fftw
