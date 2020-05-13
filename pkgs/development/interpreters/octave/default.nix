@@ -11,7 +11,7 @@
 , libX11
 , graphicsmagick
 , pcre
-, pkgconfig
+, pkg-config
 , libGL
 , libGLU
 , fltk
@@ -105,7 +105,7 @@ stdenv.mkDerivation rec {
                                                darwin.apple_sdk.frameworks.Cocoa ])
   ;
   nativeBuildInputs = [
-    pkgconfig
+    pkg-config
     perl
     gfortran
     # Listed here as well because it's outputs are split
