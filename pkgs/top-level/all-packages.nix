@@ -8766,6 +8766,8 @@ in
   jre = jre8;
   jre_headless = jre8_headless;
 
+  jdk_latest = jdk14;
+
   inherit (callPackages ../development/compilers/graalvm {
     gcc = if stdenv.targetPlatform.isDarwin then gcc8 else gcc;
     inherit (darwin.apple_sdk.frameworks)

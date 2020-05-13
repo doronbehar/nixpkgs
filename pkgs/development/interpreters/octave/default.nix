@@ -35,10 +35,10 @@
 , readline ? null
 # - Build Java interface:
 , enableJava ? true
-, jdk ? null
+, jdk_latest ? null
 , python ? null
 , overridePlatforms ? null
-, sundials_2 ? null
+, sundials ? null
 # - Build Octave Qt GUI:
 , enableQt ? false
 , qtbase ? null
@@ -48,7 +48,7 @@
 , qttools ? null
 # - JIT compiler for loops:
 , enableJIT ? false
-, llvm ? null
+, llvmPackages_latest ? null
 , libiconv
 , darwin
 }:
@@ -95,8 +95,8 @@ stdenv.mkDerivation rec {
   ++ (stdenv.lib.optional (hdf5 != null) hdf5)
   ++ (stdenv.lib.optional (glpk != null) glpk)
   ++ (stdenv.lib.optional (suitesparse != null) suitesparse)
-  ++ (stdenv.lib.optional (enableJava) jdk)
-  ++ (stdenv.lib.optional (sundials_2 != null) sundials_2)
+  ++ (stdenv.lib.optional (enableJava) jdk_latest)
+  ++ (stdenv.lib.optional (sundials != null) sundials)
   ++ (stdenv.lib.optional (gnuplot != null) gnuplot)
   ++ (stdenv.lib.optional (python != null) python)
   ++ (stdenv.lib.optionals (!stdenv.isDarwin) [ libGL libGLU libX11 ])
@@ -112,8 +112,8 @@ stdenv.mkDerivation rec {
     fftwSinglePrec
     texinfo
   ]
-  ++ (stdenv.lib.optional (sundials_2 != null) sundials_2)
-  ++ (stdenv.lib.optional enableJIT llvm)
+  ++ (stdenv.lib.optional (sundials != null) sundials)
+  ++ (stdenv.lib.optional enableJIT llvmPackages_latest.llvm)
   ++ (stdenv.lib.optionals enableQt [
     qtscript
     qttools
