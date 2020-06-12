@@ -16355,6 +16355,8 @@ in
 
   syncserver = callPackage ../servers/syncserver { };
 
+  syncevolution = callPackage ../tools/misc/syncevolution { };
+
   tailscale = callPackage ../servers/tailscale { };
 
   thanos = callPackage ../servers/monitoring/thanos { };
