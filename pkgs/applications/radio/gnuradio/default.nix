@@ -1,4 +1,5 @@
 { stdenv
+, lib
 , fetchFromGitHub
 , makeWrapper
 , writeText
@@ -41,7 +42,103 @@
 , libusb1
 , orc
 , pyopengl
+, features ? {
+    python = true;
+    gnuradio_runtime = true;
+    devDocs = false;
+    gr_ctrlport = true;
+    grc = true;
+    gr_fft = true;
+    gr_filter = true;
+    gr_analog = true;
+    gr_digital = true;
+    gr_atsc = true;
+    gr_audio = true;
+    gr_comedi = true;
+    gr_channels = true;
+    gr_noaa = true;
+    gr_pager = true;
+    gr_qtgui = true;
+    gr_trellis = true;
+    gr_uhd = true;
+    gr_utils = true;
+    gr_video_sdl = true;
+    gr_vocoder = true;
+    gr_fcd = true;
+    gr_wavelet = true;
+    gr_zeromq = true;
+  }
 }:
+
+let
+  featuresDeps = {
+    # Needed always
+    basic = {
+      native = [
+        cmake
+        pkgconfig
+        cppunit
+        swig
+        orc
+      ];
+      runtime = [ boost ];
+    };
+    devDocs = {
+      native = [ doxygen ];
+      pythonNative = with python2.pkgs; [ sphinx ];
+    };
+    python = { };
+    gnuradio_runtime = {
+      pythonRuntime = with python.pkgs; [ lxml pygtk numpy ];
+      pythonNative = with python.pkgs; [ cheetah ];
+    };
+    gr_ctrlport = { };
+    grc = { };
+    gr_fft = {
+      runtime = [ fftw ];
+    };
+    gr_filter = {
+      runtime = [ fftw ];
+    };
+    gr_analog = { };
+    gr_digital = { };
+    gr_atsc = { };
+    gr_audio = {
+      runtime = []
+        ++ lib.optionals stdenv.isLinux [ alsaLib libjack2 ]
+        ++ lib.optionals stdenv.isDarwin [ CoreAudio ]
+      ;
+    };
+    gr_comedi = {
+      runtime = [ comedilib ];
+    };
+    gr_channels = { };
+    gr_noaa = { };
+    gr_pager = { };
+    gr_qtgui = {
+      runtime = [ qt4 qwt6_qt4 ];
+      pythonRuntime = [ python.pkgs.pyqt4 ];
+    };
+    gr_trellis = { };
+    gr_uhd = {
+      runtime = [ uhd ];
+    };
+    gr_utils = { };
+    gr_video_sdl = {
+      runtime = [ SDL ];
+    };
+    gr_vocoder = { };
+    gr_fcd = {
+      runtime = [ libusb1 ];
+    };
+    gr_wavelet = {
+      runtime = [ gsl ];
+    };
+    gr_zeromq = {
+      runtime = [ cppzmq zeromq ];
+    };
+  };
+in
 
 stdenv.mkDerivation rec {
   pname = "gnuradio";
