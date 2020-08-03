@@ -1,0 +1,74 @@
+diff --git i/CMakeLists.txt w/CMakeLists.txt
+index a9737f2..342cb80 100644
+--- i/CMakeLists.txt
++++ w/CMakeLists.txt
+@@ -16,6 +16,7 @@ option (OPENDHT_LOG "Build with logs" ON)
+ option (OPENDHT_PYTHON "Build Python bindings" OFF)
+ option (OPENDHT_TOOLS "Build DHT tools" ON)
+ option (OPENDHT_SYSTEMD "Install systemd module" OFF)
++option (OPENDHT_SYSTEMD_UNIT_FILE_LOCATION "Where to install systemd unit file")
+ option (OPENDHT_ARGON2 "Use included argon2 sources" OFF)
+ option (OPENDHT_LTO "Build with LTO" OFF)
+ option (OPENDHT_SANITIZE "Build with address sanitizer and stack protector" OFF)
+@@ -29,6 +30,7 @@ CMAKE_DEPENDENT_OPTION(OPENDHT_HTTP "Build embedded http(s) client" OFF "NOT OPE
+ option (OPENDHT_PEER_DISCOVERY "Enable multicast peer discovery" ON)
+ option (OPENDHT_INDEX "Build DHT indexation feature" OFF)
+ option (OPENDHT_TESTS "Add unit tests executable" OFF)
++option (OPENDHT_DISABLE_NETWORK_TESTS "Disable unit tests that require network access" OFF)
+ option (OPENDHT_C "Build C bindings" OFF)
+ 
+ find_package(Doxygen)
+@@ -393,19 +395,21 @@ if (OPENDHT_TESTS)
+         tests/threadpooltester.h
+         tests/threadpooltester.cpp
+     )
+-    if (OPENDHT_PROXY_SERVER AND OPENDHT_PROXY_CLIENT)
+-        list (APPEND test_FILES
+-            tests/httptester.h
+-            tests/httptester.cpp
+-            tests/dhtproxytester.h
+-            tests/dhtproxytester.cpp
+-        )
+-    endif()
+-    if (OPENDHT_PEER_DISCOVERY)
+-        list (APPEND test_FILES
+-            tests/peerdiscoverytester.h
+-            tests/peerdiscoverytester.cpp
+-        )
++    if (NOT OPENDHT_DISABLE_NETWORK_TESTS)
++        if (OPENDHT_PROXY_SERVER AND OPENDHT_PROXY_CLIENT)
++            list (APPEND test_FILES
++                tests/httptester.h
++                tests/httptester.cpp
++                tests/dhtproxytester.h
++                tests/dhtproxytester.cpp
++            )
++        endif()
++        if (OPENDHT_PEER_DISCOVERY)
++            list (APPEND test_FILES
++                tests/peerdiscoverytester.h
++                tests/peerdiscoverytester.cpp
++            )
++        endif()
+     endif()
+     add_executable(opendht_unit_tests
+         tests/tests_runner.cpp
+diff --git i/tools/CMakeLists.txt w/tools/CMakeLists.txt
+index 866ea39..ecdfc49 100644
+--- i/tools/CMakeLists.txt
++++ w/tools/CMakeLists.txt
+@@ -42,8 +42,14 @@ endif ()
+ install (TARGETS dhtnode dhtscanner dhtchat RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+ if (OPENDHT_SYSTEMD)
++    if (NOT DEFINED OPENDHT_SYSTEMD_UNIT_FILE_LOCATION)
+ 	execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} systemd --variable=systemdsystemunitdir
+ 					OUTPUT_VARIABLE SYSTEMD_UNIT_INSTALL_DIR)
++    	message("-- Using Systemd unit installation directory by pkg-config: " ${SYSTEMD_UNIT_INSTALL_DIR})
++    else()
++    	message("-- Using Systemd unit installation directory requested: " ${OPENDHT_SYSTEMD_UNIT_FILE_LOCATION})
++	set(SYSTEMD_UNIT_INSTALL_DIR ${OPENDHT_SYSTEMD_UNIT_FILE_LOCATION})
++    endif()
+ 	string(REGEX REPLACE "[ \t\n]+" "" SYSTEMD_UNIT_INSTALL_DIR "${SYSTEMD_UNIT_INSTALL_DIR}")
+ 	set (systemdunitdir "${SYSTEMD_UNIT_INSTALL_DIR}")
+ 

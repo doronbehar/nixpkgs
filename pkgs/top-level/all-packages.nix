@@ -21117,6 +21117,12 @@ in
 
   jamin = callPackage ../applications/audio/jamin { };
 
+  inherit (callPackage ../applications/networking/instant-messengers/jami {})
+    jami-daemon
+    jami-lrc
+    jami-client-gnome
+  ;
+
   japa = callPackage ../applications/audio/japa { };
 
   dupd = callPackage ../tools/misc/dupd { };
