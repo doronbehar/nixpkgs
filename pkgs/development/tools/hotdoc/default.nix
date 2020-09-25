@@ -17,15 +17,28 @@ python3Packages.buildPythonApplication rec {
     sha256 = "0nypvcqp4b0qfps35f7mz3d90zjh0v5wawpd06ra28q92nxblx17";
   };
 
+  # https://hotdoc.github.io/installing.html#build-options
+  HOTDOC_BUILD_C_EXTENSION = "enabled";
   nativeBuildInputs = [
     pkg-config
     flex
     cmake
   ];
 
-  # Cmake is needed to build a c extension CMARK, but the build system is still
-  # python
+  # Cmake is needed to build a c extension CMARK, that's found inside the
+  # source tarball. We add cmake to PATH here, and not in nativeBuildInputs,
+  # since it's not as the main build system of the project.
   dontUseCmakeConfigure = true;
+
+  prePatch =
+    # https://github.com/hotdoc/hotdoc/issues/210
+  ''
+    substituteInPlace setup.py \
+      --replace wheezy.template==0.1.167 wheezy.template \
+      --replace networkx==1.11 networkx \
+      --replace pkgconfig==1.1.0 pkgconfig
+  '';
+
 
   propagatedBuildInputs = with python3Packages; [
     pyyaml
@@ -48,23 +61,10 @@ python3Packages.buildPythonApplication rec {
     libxml2
   ];
 
-  prePatch =
-    # https://github.com/hotdoc/hotdoc/issues/210
-  ''
-    substituteInPlace setup.py \
-      --replace wheezy.template==0.1.167 wheezy.template \
-      --replace networkx==1.11 networkx \
-      --replace pkgconfig==1.1.0 pkgconfig
-  '';
-
-  # https://hotdoc.github.io/installing.html#build-options
-  HOTDOC_BUILD_C_EXTENSION = "enabled";
-
   meta = {
-    description = "The tastiest API documentation system";
+    description = "HotDoc: the tastiest API documentation system";
     homepage = "https://hotdoc.github.io/";
     license = with lib.licenses; [ lgpl21Plus ];
     maintainers = with lib.maintainers; [ doronbehar ];
   };
 }
-
