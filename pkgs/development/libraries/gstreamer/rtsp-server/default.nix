@@ -11,11 +11,11 @@
 
 stdenv.mkDerivation rec {
   pname = "gst-rtsp-server";
-  version = "1.16.2";
+  version = "1.18.0";
 
   src = fetchurl {
     url = "${meta.homepage}/src/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "0vn23nxwvs96g7gcxw5zbnw23hkhky8a8r42wq68411vgf1s41yy";
+    sha256 = "03y7nyjaagis7mmg8vbhxmnc1v9xf2y3cab2s3q2vgsc0l8r7l9a";
   };
 
   outputs = [ "out" "dev" ];

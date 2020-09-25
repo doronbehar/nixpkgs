@@ -21,13 +21,13 @@
 
 stdenv.mkDerivation rec {
   pname = "gst-plugins-ugly";
-  version = "1.16.2";
+  version = "1.18.0";
 
   outputs = [ "out" "dev" ];
 
   src = fetchurl {
     url = "${meta.homepage}/src/${pname}/${pname}-${version}.tar.xz";
-    sha256 = "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m";
+    sha256 = "10p0nyzighvkciaspxnhlr7d7n4acrv96lf483i8l988bvj48rk8";
   };
 
   nativeBuildInputs = [

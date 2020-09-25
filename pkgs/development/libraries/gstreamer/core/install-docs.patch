@@ -1,0 +1,13 @@
+diff --git i/docs/meson.build w/docs/meson.build
+index e1aecb599..0b30ae189 100644
+--- i/docs/meson.build
++++ w/docs/meson.build
+@@ -140,7 +140,7 @@ foreach lib: libs
+       gi_smart_index: true,
+       gi_order_generated_subpages: true,
+       dependencies: deps + [hotdoc_plugin_scanner],
+-      install: false,
++      install: true,
+   )]
+ endforeach
+ 
