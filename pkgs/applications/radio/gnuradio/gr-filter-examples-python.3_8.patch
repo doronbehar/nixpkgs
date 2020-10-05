@@ -1,0 +1,17 @@
+diff --git i/gr-filter/CMakeLists.txt w/gr-filter/CMakeLists.txt
+index 73899793f..6ddb9ebf6 100644
+--- i/gr-filter/CMakeLists.txt
++++ w/gr-filter/CMakeLists.txt
+@@ -53,11 +53,11 @@ if(ENABLE_PYTHON)
+     add_subdirectory(python/filter/design)
+     add_subdirectory(python/filter/gui)
+     add_subdirectory(apps)
++    add_subdirectory(examples)
+ endif(ENABLE_PYTHON)
+ if(ENABLE_GRC)
+     add_subdirectory(grc)
+ endif(ENABLE_GRC)
+-add_subdirectory(examples)
+ add_subdirectory(docs)
+ 
+ ########################################################################
