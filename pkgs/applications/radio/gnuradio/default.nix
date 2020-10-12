@@ -250,8 +250,8 @@ let
   patches = shared.patches
     ++ stdenv.lib.optionals (!hasFeature "python-support" features) [
       # If python support is not desired, we need a patch so that it won't install
-      # the examples of gr-filter if python-support is turned off. It's a
-      # backported version of: https://github.com/gnuradio/gnuradio/pull/3806
+      # the examples of gr-filter and gr-fec if python-support is turned off. See:
+      # https://github.com/gnuradio/gnuradio/pull/3839
       ./gr-filter-examples-python.3_8.patch
     ]
   ;
