@@ -12,6 +12,7 @@
 , "@webassemblyjs/wast-refmt"
 , "alloy"
 , "asar"
+, "balena-cli"
 , "bash-language-server"
 , "bower"
 , "bower2nix"

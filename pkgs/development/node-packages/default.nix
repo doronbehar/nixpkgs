@@ -21,6 +21,12 @@ let
         done
       '';
     };
+    balena-cli = super.balena-cli.override {
+      buildInputs = [ self.node-pre-gyp self.node-gyp-build ];
+      meta = nodePackages.balena-cli.meta // {
+        maintainers = with stdenv.lib.maintainers; [ doronbehar ];
+      };
+    };
 
     coc-imselect = super.coc-imselect.override {
       meta.broken = since "10";
