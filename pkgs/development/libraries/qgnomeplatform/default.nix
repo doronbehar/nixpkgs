@@ -8,6 +8,7 @@
 , qtbase
 , qmake
 , qtx11extras
+, adwaita-qt
 , pantheon
 , substituteAll
 , gsettings-desktop-schemas
@@ -15,13 +16,13 @@
 
 mkDerivation rec {
   pname = "qgnomeplatform";
-  version = "0.6.1";
+  version = "0.6.90";
 
   src = fetchFromGitHub {
     owner = "FedoraQt";
     repo = "QGnomePlatform";
     rev = version;
-    sha256 = "1mwqg2zk0sfjq54vz2jjahbgi5sxw8rb71h6mgg459wp99mhlqi0";
+    sha256 = "rdjk2tfEh2YA084hsq5bhErtsNSFWfQBolXy19/ABdY=";
   };
 
   patches = [
@@ -42,6 +43,7 @@ mkDerivation rec {
     gtk3
     qtbase
     qtx11extras
+    adwaita-qt
   ];
 
   postPatch = ''
