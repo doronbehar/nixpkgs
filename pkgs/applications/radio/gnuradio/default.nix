@@ -215,11 +215,13 @@ let
     buildInputs
     disallowedReferences
     stripDebugList
-    passthru
     doCheck
     dontWrapPythonPrograms
     meta
   ;
+  passthru = shared.passthru // lib.optionalAttrs (hasFeature "gr-qtgui" features) {
+    inherit (libsForQt5) qwt;
+  };
   cmakeFlags = shared.cmakeFlags
     # From some reason, if these are not set, libcodec2 and gsm are not
     # detected properly. NOTE: qradiolink needs libcodec2 to be detected in
