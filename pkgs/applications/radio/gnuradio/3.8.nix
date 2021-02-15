@@ -5,8 +5,8 @@
 # Remove gcc and python references
 , removeReferencesTo
 , pkg-config
-, volk
 , cppunit
+, swig
 , orc
 , boost
 , log4cpp
@@ -22,8 +22,6 @@
 , uhd
 , SDL
 , gsl
-, libsodium
-, libsndfile
 , cppzmq
 , zeromq
 # GUI related
@@ -40,15 +38,16 @@
 , overrideSrc ? {}
 , pname ? "gnuradio"
 , versionAttr ? {
-  major = "3.9";
-  minor = "0";
+  major = "3.8";
+  minor = "2";
   patch = "0";
 }
-, fetchSubmodules ? false
+# Should be false on the release after 3.8.2.0
+, fetchSubmodules ? true
 }:
 
 let
-  sourceSha256 =  "ZjQzioAuWrd8jsYOnLNH1mK4n9EbrjgvPX3mTzVFdLk=";
+  sourceSha256 =  "1mnfwdy7w3160vi6110x2qkyq8l78qi8771zwak9n72bl7lhhpnf";
   featuresInfo = {
     # Needed always
     basic = {
@@ -58,7 +57,6 @@ let
         orc
       ];
       runtime = [
-        volk
         boost
         log4cpp
         mpir
@@ -68,13 +66,23 @@ let
         six
       ];
     };
+    # NOTE: Should be removed on the release after 3.8.2.0, see:
+    # https://github.com/gnuradio/gnuradio/commit/80c04479d
+    volk = {
+      cmakeEnableFlag = "VOLK";
+    };
     doxygen = {
       native = [ doxygen ];
       cmakeEnableFlag = "DOXYGEN";
     };
+    sphinx = {
+      pythonNative = with python.pkgs; [ sphinx ];
+      cmakeEnableFlag = "SPHINX";
+    };
     python-support = {
       pythonRuntime = [ python.pkgs.six ];
       native = [
+        swig
         python
       ];
       cmakeEnableFlag = "PYTHON";
@@ -83,20 +91,17 @@ let
       native = [ cppunit ];
       cmakeEnableFlag = "TESTING";
     };
-    post-install = {
-      cmakeEnableFlag = "POSTINSTALL";
-    };
     gnuradio-runtime = {
       cmakeEnableFlag = "GNURADIO_RUNTIME";
-      runtime = [
-        python.pkgs.pybind11
-      ];
     };
     gr-ctrlport = {
       # Thrift support is not really working well, and even the patch they
       # recommend applying on 0.9.2 won't apply. See:
-      # https://github.com/gnuradio/gnuradio/blob/v3.9.0.0/gnuradio-runtime/lib/controlport/thrift/README
+      # https://github.com/gnuradio/gnuradio/blob/v3.8.2.0/gnuradio-runtime/lib/controlport/thrift/README
       cmakeEnableFlag = "GR_CTRLPORT";
+      native = [
+        swig
+      ];
     };
     gnuradio-companion = {
       pythonRuntime = with python.pkgs; [
@@ -105,15 +110,11 @@ let
         numpy
         pygobject3
       ];
-      native = [
-        python.pkgs.pytest
-      ];
       runtime = [
         gtk3
         pango
         gobject-introspection
         cairo
-        libsndfile
       ];
       cmakeEnableFlag = "GRC";
     };
@@ -172,9 +173,6 @@ let
       ];
       cmakeEnableFlag = "GR_MODTOOL";
     };
-    gr-blocktool = {
-      cmakeEnableFlag = "GR_BLOCKTOOL";
-    };
     gr-video-sdl = {
       runtime = [ SDL ];
       cmakeEnableFlag = "GR_VIDEO_SDL";
@@ -185,14 +183,11 @@ let
     };
     gr-wavelet = {
       cmakeEnableFlag = "GR_WAVELET";
-      runtime = [ gsl libsodium ];
+      runtime = [ gsl ];
     };
     gr-zeromq = {
       runtime = [ cppzmq zeromq ];
       cmakeEnableFlag = "GR_ZEROMQ";
-    };
-    gr-network = {
-      cmakeEnableFlag = "GR_NETWORK";
     };
   };
   shared = (import ./shared.nix {
@@ -260,6 +255,18 @@ let
       sed -i -e "/python\/volk_modtool/d" volk/CMakeLists.txt
     ''
   ;
+  patches = [
+    # Don't install python referencing files if python support is disabled.
+    # See: https://github.com/gnuradio/gnuradio/pull/3839
+    (fetchpatch {
+      url = "https://github.com/gnuradio/gnuradio/commit/4a4fd570b398b0b50fe875fcf0eb9c9db2ea5c6e.diff";
+      sha256 = "xz2E0ji6zfdOAhjfPecAcaVOIls1XP8JngLkBbBBW5Q=";
+    })
+    (fetchpatch {
+      url = "https://github.com/gnuradio/gnuradio/commit/dbc8ad7e7361fddc7b1dbc267c07a776a3f9664b.diff";
+      sha256 = "tQcCpcUbJv3yqAX8rSHN/pAuBq4ueEvoVo7sNzZGvf4=";
+    })
+  ];
 in
 
 stdenv.mkDerivation rec {
@@ -273,6 +280,7 @@ stdenv.mkDerivation rec {
     preConfigure
     # disallowedReferences
     stripDebugList
+    patches
     postInstall
     passthru
     doCheck

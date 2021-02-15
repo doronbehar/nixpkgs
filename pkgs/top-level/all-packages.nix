@@ -22067,6 +22067,29 @@ in
       };
     };
   };
+  gnuradio3_8 = callPackage ../applications/radio/gnuradio/wrapper.nix {
+    unwrapped = callPackage ../applications/radio/gnuradio/3.8.nix {
+      inherit (darwin.apple_sdk.frameworks) CoreAudio;
+      python = python2;
+    };
+  };
+  gnuradio3_8Packages = lib.recurseIntoAttrs gnuradio3_8.pkgs;
+  # A build without gui components and other utilites not needed if gnuradio is
+  # used as a c++ library.
+  gnuradio3_8Minimal = gnuradio3_8.override {
+    wrap = false;
+    unwrapped = gnuradio3_8.unwrapped.override {
+      features = {
+        gnuradio-companion = false;
+        python-support = false;
+        gr-qtgui = false;
+        gr-utils = false;
+        sphinx = false;
+        doxygen = false;
+        gr-wxgui = false;
+      };
+    };
+  };
   gnuradio3_7 = callPackage ../applications/radio/gnuradio/wrapper.nix {
     unwrapped = callPackage ../applications/radio/gnuradio/3.7.nix {
       inherit (darwin.apple_sdk.frameworks) CoreAudio;
