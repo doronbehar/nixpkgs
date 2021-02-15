@@ -3841,6 +3841,8 @@ in
 
   volctl = callPackage ../tools/audio/volctl { };
 
+  volk = callPackage ../development/libraries/volk { };
+
   vorta = libsForQt5.callPackage ../applications/backup/vorta { };
 
   utahfs = callPackage ../applications/networking/utahfs { };
