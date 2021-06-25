@@ -4,9 +4,22 @@
 , jre
 , unzip
 , makeWrapper
+, makeDesktopItem
 }:
 
-stdenv.mkDerivation {
+let
+  desktopItem = makeDesktopItem {
+    name = "ImageJ";
+    desktopName = "ImageJ";
+    icon = "imagej";
+    categories = "Science;Utility;Graphics;";
+    exec = "imagej";
+  };
+  icon = fetchurl {
+    url = "https://imagej.net/media/icons/imagej.png";
+    sha256 = "sha256-nU2nWI1wxZB/xlOKsZzdUjj+qiCTjO6GwEKYgZ5Risg=";
+  };
+in stdenv.mkDerivation rec {
   pname = "imagej";
   version = "150";
 
@@ -31,6 +44,11 @@ stdenv.mkDerivation {
     mkdir $out/bin
     makeWrapper ${jre}/bin/java $out/bin/imagej \
       --add-flags "-jar $out/share/java/ij.jar -ijpath $out/share"
+  '' + lib.optionalString stdenv.isLinux ''
+    install -Dm644 ${icon} $out/share/icons/hicolor/128x128/apps/imagej.png
+    install -Dm644 ${desktopItem}/share/applications/ImageJ.desktop $out/share/applications/ImageJ.desktop
+    substituteInPlace $out/share/applications/ImageJ.desktop \
+      --replace Exec=imagej Exec=$out/bin/imagej
   '';
   meta = with lib; {
     homepage = "https://imagej.nih.gov/ij/";
