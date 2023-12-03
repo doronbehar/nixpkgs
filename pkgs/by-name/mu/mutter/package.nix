@@ -1,6 +1,5 @@
 {
   fetchurl,
-  fetchpatch,
   runCommand,
   lib,
   stdenv,
@@ -86,11 +85,8 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-PBi6Tgk+qaN4ET3K+nvbXB+db1r5dlAmt+Zst42vYU4=";
   };
   patches = [
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/mutter/-/commit/3ac82a58c51a5c8db6b49e89a1232f99c79644cc.patch";
-      hash = "sha256-L8GGEFHE566yvpAAVXA8bn2hvDfFAO8S/MqPM3Oki90=";
-      revert = true;
-    })
+    # Reverts https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/2878
+    ./annoying-focus.patch
   ];
 
   mesonFlags = [

@@ -1,0 +1,20 @@
+diff --git i/src/core/window.c w/src/core/window.c
+index 3c00bfe3d..831da5611 100644
+--- i/src/core/window.c
++++ w/src/core/window.c
+@@ -1962,15 +1962,6 @@ window_state_on_map (MetaWindow *window,
+   *takes_focus = !intervening_events;
+   *places_on_top = *takes_focus;
+ 
+-  /* don't initially focus windows that are intended to not accept
+-   * focus
+-   */
+-  if (!meta_window_is_focusable (window))
+-    {
+-      *takes_focus = FALSE;
+-      return;
+-    }
+-
+   /* When strict focus mode is enabled, prevent new windows from taking
+    * focus unless they are ancestors to the transient.
+    */
