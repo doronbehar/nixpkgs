@@ -55,6 +55,7 @@ python3.pkgs.buildPythonApplication rec {
     # FIXME: notion-client -- broken, doesn't build.
     # taskwarrior optional-dep
     taskw-ng
+    xdg
   ];
 
   postInstall = ''
