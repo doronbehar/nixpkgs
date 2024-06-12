@@ -3,7 +3,48 @@
 , fetchFromGitHub
 }:
 
-python3.pkgs.buildPythonApplication rec {
+let
+  python3' = python3.override {
+  packageOverrides = self: super: {
+    pyyaml = super.pyyaml.overridePythonAttrs (old: {
+      version = "5.3.1";
+      src = fetchFromGitHub {
+        owner = "yaml";
+        repo = "pyyaml";
+        rev = "refs/tags/5.3.1";
+        hash = "sha256-Wfgf37YLKRdwP/FsfpHC/mY2/NRuBnGJZDKlo7XyzpQ=";
+      };
+      doCheck = false;
+    });
+    bubop = super.bubop.overridePythonAttrs (old: {
+      postPatch = ''
+      '';
+      nativeBuildInputs = [ super.poetry-core ];
+      propagatedBuildInputs = [
+        self.loguru
+        super.python-dateutil
+        self.pyyaml
+        super.tqdm
+        super.click
+      ];
+    });
+    loguru = super.loguru.overridePythonAttrs (old: {
+      version = "0.5.3";
+      src = fetchFromGitHub {
+        owner = "Delgan";
+        repo = "loguru";
+        rev = "refs/tags/0.5.3";
+        hash = "sha256-a6VX4Qy9HZ+n7xVzLePNbWMsnfelxiYCOpb7IGZ2HsQ=";
+      };
+      propagatedBuildInputs = [
+        super.aiocontextvars
+      ];
+      # These fail due to our too recent pytest version
+      doCheck = false;
+    });
+  };
+};
+in python3'.pkgs.buildPythonApplication rec {
   pname = "syncall";
   version = "1.8.5";
   format = "pyproject";
@@ -17,10 +58,8 @@ python3.pkgs.buildPythonApplication rec {
 
   postPatch = ''
     substituteInPlace pyproject.toml \
-    --replace-fail 'loguru = "^0.5.3"' 'loguru = "^0.7"' \
-    --replace-fail 'PyYAML = "~5.3.1"' 'PyYAML = "^6.0"' \
-    --replace-fail 'bidict = "^0.21.2"' 'bidict = "^0.23"' \
-    --replace-fail 'typing = "^3.7.4"' '''
+      --replace-fail 'bidict = "^0.21.2"' 'bidict = "^0.23"' \
+      --replace-fail 'typing = "^3.7.4"' '''
   '';
 
   nativeBuildInputs = [
@@ -28,7 +67,7 @@ python3.pkgs.buildPythonApplication rec {
     python3.pkgs.poetry-dynamic-versioning
   ];
 
-  propagatedBuildInputs = with python3.pkgs; [
+  propagatedBuildInputs = with python3'.pkgs; [
     bidict
     bubop
     click
