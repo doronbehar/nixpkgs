@@ -1,92 +1,57 @@
 { lib
-, mkYarnPackage
+, stdenv
 , libsass
 , nodejs
-, python3
-, pkg-config
 , fetchFromGitHub
 , fetchYarnDeps
+, yarnConfigHook
+, yarnBuildHook
+, npmHooks
+, writeScriptBin
 , nixosTests
-, vips
-, nodePackages
 }:
 
-let
-  pinData = lib.importJSON ./pin.json;
-
-  pkgConfig = {
-    node-sass = {
-      nativeBuildInputs = [ pkg-config ];
-      buildInputs = [ libsass python3 ];
-      postInstall = ''
-        LIBSASS_EXT=auto yarn --offline run build
-        rm build/config.gypi
-      '';
-    };
-    sharp = {
-      nativeBuildInputs = [ pkg-config nodePackages.node-gyp nodePackages.semver ];
-      buildInputs = [ vips ];
-      postInstall = ''
-        yarn --offline run install
-      '';
-    };
-  };
-
-  name = "lemmy-ui";
-  version = pinData.uiVersion;
+stdenv.mkDerivation (finalAttrs: {
+  pname = "lemmy-ui";
+  version = "0.19.3";
 
   src = fetchFromGitHub {
     owner = "LemmyNet";
-    repo = name;
-    rev = version;
+    repo = "lemmy-ui";
+    rev = "refs/tags/${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = pinData.uiHash;
+    hash = "sha256-6GGiKCNL0PALdz0W0d1OOPyMIA5kaoL3148j9GWzrMM=";
   };
-in
-mkYarnPackage {
 
-  inherit src pkgConfig name version;
-
-  extraBuildInputs = [ libsass ];
-
-  packageJSON = ./package.json;
   offlineCache = fetchYarnDeps {
-    yarnLock = src + "/yarn.lock";
-    hash = pinData.uiYarnDepsHash;
+    yarnLock = finalAttrs.src + "/yarn.lock";
+    hash = "sha256-UQ+B2vF34L+HuisyO7wdW2zCfEEGa8YdnoaB4jHi+DY=";
   };
+  nativeBuildInputs = [
+    yarnConfigHook
+    yarnBuildHook
+    nodejs
+    # Emulate a git executable in $PATH, for upstream's git rev-parse --short
+    # HEAD command used in package.json
+    (writeScriptBin "git" ''
+      echo ${finalAttrs.src.rev}
+    '')
+  ];
 
-  patchPhase = ''
-    substituteInPlace ./package.json \
-      --replace '$(git rev-parse --short HEAD)' "${src.rev}" \
-      --replace 'yarn clean' 'yarn --offline clean' \
-      --replace 'yarn run rimraf dist' 'yarn --offline run rimraf dist'
-  '';
+  buildInputs = [ libsass ];
 
-  yarnPreBuild = ''
-    export npm_config_nodedir=${nodejs}
-  '';
+  yarnBuildScript = "build:prod";
 
-  buildPhase = ''
-    # Yarn writes cache directories etc to $HOME.
-    export HOME=$PWD/yarn_home
+  installPhase = ''
+    runHook preInstall
 
-    ln -sf $PWD/node_modules $PWD/deps/lemmy-ui/
-    echo 'export const VERSION = "${version}";' > $PWD/deps/lemmy-ui/src/shared/version.ts
-
-    yarn --offline build:prod
-  '';
-
-  preInstall = ''
     mkdir $out
-    cp -R ./deps/lemmy-ui/dist $out
-    cp -R ./node_modules $out
+    cp -R ./dist $out
+
+    runHook postInstall
   '';
 
-  distPhase = "true";
-
-  passthru.updateScript = ./update.py;
   passthru.tests.lemmy-ui = nixosTests.lemmy;
-  passthru.commit_sha = src.rev;
 
   meta = with lib; {
     description = "Building a federated alternative to reddit in rust";
@@ -95,4 +60,4 @@ mkYarnPackage {
     maintainers = with maintainers; [ happysalada billewanick ];
     inherit (nodejs.meta) platforms;
   };
-}
+})
