@@ -5,6 +5,7 @@
   async-timeout,
   chacha20poly1305-reuseable,
   cryptography,
+  numpy,
   deepdiff,
   fetchFromGitHub,
   ifaddr,
@@ -81,6 +82,7 @@ buildPythonPackage rec {
   ];
 
   nativeCheckInputs = [
+    numpy
     deepdiff
     pyfakefs
     pytest-aiohttp
