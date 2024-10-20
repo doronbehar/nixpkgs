@@ -29,6 +29,7 @@
 , tomli
 , importlib-metadata
 , deepdiff
+, numpy
 , pytestCheckHook
 , httpretty
 , pytest-mock
@@ -103,6 +104,7 @@ buildPythonPackage rec {
 
   nativeCheckInputs = [
     deepdiff
+    numpy
     pytestCheckHook
     httpretty
     pytest-mock
