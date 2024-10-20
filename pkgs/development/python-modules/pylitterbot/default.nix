@@ -9,6 +9,7 @@
   poetry-dynamic-versioning,
   pycognito,
   pyjwt,
+  numpy,
   pytest-aiohttp,
   pytest-freezegun,
   pytestCheckHook,
@@ -41,6 +42,7 @@ buildPythonPackage rec {
     deepdiff
     pycognito
     pyjwt
+    numpy
   ];
 
   nativeCheckInputs = [
