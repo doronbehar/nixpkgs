@@ -53,6 +53,7 @@ python3.pkgs.buildPythonApplication rec {
   ;
 
   propagatedBuildInputs = with python3.pkgs; [
+    numpy
     bleach
     bottle
     dataclasses-json
