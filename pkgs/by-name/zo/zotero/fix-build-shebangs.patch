@@ -1,0 +1,79 @@
+diff --git i/js-build/note-editor.js w/js-build/note-editor.js
+index 35bf5ecf0..168bc99c3 100644
+--- i/js-build/note-editor.js
++++ w/js-build/note-editor.js
+@@ -37,6 +37,7 @@ async function getZoteroNoteEditor(signatures) {
+ 		}
+ 		catch (e) {
+ 			await exec('npm ci', { cwd: modulePath });
++			await exec('patch-shebangs node_modules', { cwd: modulePath });
+ 			await exec('npm run build', { cwd: modulePath });
+ 			await fs.copy(path.join(modulePath, 'build', 'zotero'), targetDir);
+ 		}
+diff --git i/js-build/pdf-reader.js w/js-build/pdf-reader.js
+index 30e91b3fb..233893d59 100644
+--- i/js-build/pdf-reader.js
++++ w/js-build/pdf-reader.js
+@@ -37,6 +37,7 @@ async function getPDFReader(signatures) {
+ 		}
+ 		catch (e) {
+ 			await exec('npm ci', { cwd: modulePath });
++			await exec('patch-shebangs node_modules', { cwd: modulePath });
+ 			await exec('npm run build', { cwd: modulePath });
+ 			await fs.copy(path.join(modulePath, 'build', 'zotero'), targetDir);
+ 		}
+diff --git i/js-build/pdf-worker.js w/js-build/pdf-worker.js
+index 9aef08202..a78e21033 100644
+--- i/js-build/pdf-worker.js
++++ w/js-build/pdf-worker.js
+@@ -34,6 +34,7 @@ async function getPDFWorker(signatures) {
+ 		}
+ 		catch (e) {
+ 			await exec('npm ci', { cwd: modulePath });
++			await exec('patch-shebangs node_modules', { cwd: modulePath });
+ 			await exec('npm run build', { cwd: modulePath });
+ 			await fs.copy(path.join(modulePath, 'build', 'worker.js'), path.join(targetDir, 'worker.js'));
+ 		}
+diff --git i/pdf-worker/package.json w/pdf-worker/package.json
+index 641cf05..92263fa 100644
+--- i/pdf-worker/package.json
++++ w/pdf-worker/package.json
+@@ -6,7 +6,7 @@
+ 	"scripts": {
+ 		"build": "npm run build:pdf.js && npm run build:worker",
+ 		"build:pdf.js": "sh scripts/build-pdfjs",
+-		"build:worker": "webpack --mode production",
++		"build:worker": "patch-shebangs . && webpack --mode production",
+ 		"devel:worker": "webpack --mode development",
+ 		"test": "npx mocha"
+ 	},
+diff --git i/reader/epubjs/epub.js/package.json w/reader/epubjs/epub.js/package.json
+index b4c5c32..ce64969 100644
+--- i/reader/epubjs/epub.js/package.json
++++ w/reader/epubjs/epub.js/package.json
+@@ -22,7 +22,7 @@
+     "productionLegacy": "NODE_ENV=production MINIMIZE=true LEGACY=true webpack --progress",
+     "compile": "babel -d lib/ src/",
+     "watch": "babel --watch -d lib/ src/",
+-    "prepare": "npm run compile && npm run build && npm run minify && npm run legacy && npm run productionLegacy"
++    "prepare": "patch-shebangs node_modules ../../../reader/node_modules && npm run compile && npm run build && npm run minify && npm run legacy && npm run productionLegacy"
+   },
+   "author": "fchasen@gmail.com",
+   "license": "BSD-2-Clause",
+diff --git i/reader/package.json w/reader/package.json
+index 8b21f41..eea24b7 100644
+--- i/reader/package.json
++++ w/reader/package.json
+@@ -5,9 +5,9 @@
+ 	"scripts": {
+ 		"build": "npm run build:pdf.js && npm run build:reader",
+ 		"build:pdf.js": "sh pdfjs/build",
+-		"build:reader": "webpack",
+-		"build:ios": "webpack --config-name ios",
+-		"build:android": "webpack --config-name android",
++		"build:reader": "patch-shebangs . && webpack",
++		"build:ios": "patch-shebangs . && webpack --config-name ios",
++		"build:android": "patch-shebangs . && webpack --config-name android",
+ 		"start": "webpack-dev-server --mode development --config-name dev",
+ 		"view-dev": "webpack-dev-server --mode development --config-name view-dev",
+ 		"test": "echo \"No tests yet\""
