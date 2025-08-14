@@ -27,7 +27,19 @@ assert portaudioSupport -> portaudio != null;
 # audio backends are mutually exclusive
 assert !(pulseaudioSupport && portaudioSupport);
 
-gnuradioMinimal.pkgs.mkDerivation rec {
+let
+  gnuradioMinimal' = gnuradioMinimal.override {
+    packageOverrides = grSelf: grSuper: {
+      osmosdr = grSuper.osmosdr.override {
+        airspy = null;
+        hackrf = null;
+        libbladeRF = null;
+        soapysdr-with-plugins = null;
+      };
+    };
+  };
+in
+gnuradioMinimal'.pkgs.mkDerivation rec {
   pname = "gqrx";
   version = "2.17.7";
 
@@ -47,14 +59,14 @@ gnuradioMinimal.pkgs.mkDerivation rec {
   ++ lib.optional stdenv.hostPlatform.isDarwin desktopToDarwinBundle;
 
   buildInputs = [
-    gnuradioMinimal.unwrapped.logLib
+    gnuradioMinimal'.unwrapped.logLib
     mpir
     fftwFloat
     libjack2
-    gnuradioMinimal.unwrapped.boost
+    gnuradioMinimal'.unwrapped.boost
     qt6Packages.qtbase
     qt6Packages.qtsvg
-    gnuradioMinimal.pkgs.osmosdr
+    gnuradioMinimal'.pkgs.osmosdr
     rtl-sdr
     hackrf
   ]
@@ -62,9 +74,9 @@ gnuradioMinimal.pkgs.mkDerivation rec {
     alsa-lib
     qt6Packages.qtwayland
   ]
-  ++ lib.optionals (gnuradioMinimal.hasFeature "gr-ctrlport") [
+  ++ lib.optionals (gnuradioMinimal'.hasFeature "gr-ctrlport") [
     thrift
-    gnuradioMinimal.unwrapped.python.pkgs.thrift
+    gnuradioMinimal'.unwrapped.python.pkgs.thrift
   ]
   ++ lib.optionals pulseaudioSupport [ libpulseaudio ]
   ++ lib.optionals portaudioSupport [ portaudio ];
