@@ -22,6 +22,10 @@ in
         This [enables `hardware.i2c`](#opt-hardware.i2c.enable), so note to add
         yourself to [`hardware.i2c.group`](#opt-hardware.i2c.group).
       '';
+      package = lib.mkPackageOption pkgs "package with dbus service with which to control brightness" {
+        default = [ "ddccontrol" ];
+        example = [ "ddcutil-service" ];
+      };
     };
   };
 
@@ -36,17 +40,16 @@ in
       enable = true;
     };
 
-    # Give users access to the "gddccontrol" tool
     environment.systemPackages = [
-      pkgs.ddccontrol
+      cfg.package
     ];
 
     services.dbus.packages = [
-      pkgs.ddccontrol
+      cfg.package
     ];
 
     systemd.packages = [
-      pkgs.ddccontrol
+      cfg.package
     ];
   };
 }
