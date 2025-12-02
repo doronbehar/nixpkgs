@@ -1,0 +1,110 @@
+name: Auto-patch nixos-unstable with PRs
+
+on:
+  schedule:
+    # Check for updates every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual triggering
+
+env:
+  # List of PR URLs to apply (one per line)
+  PR_URLS: |
+    https://github.com/NixOS/nixpkgs/pull/433777
+    https://github.com/NixOS/nixpkgs/pull/463389
+    https://github.com/NixOS/nixpkgs/pull/454973
+    https://github.com/NixOS/nixpkgs/pull/456989
+    https://github.com/NixOS/nixpkgs/pull/460010
+    https://github.com/NixOS/nixpkgs/pull/466504
+
+jobs:
+  update-and-patch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restore Git cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .git
+          key: git-cache-${{ github.run_id }}
+          restore-keys: |
+            git-cache-
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote add upstream https://github.com/NixOS/nixpkgs.git || true
+          git fetch upstream nixos-unstable
+          git fetch origin nixos-unstable || true
+
+      - name: Check if nixos-unstable needs update
+        id: check_update
+        run: |
+          # Get commit hashes and dates
+          upstream_commit=$(git rev-parse upstream/nixos-unstable)
+          upstream_date=$(git show -s --format=%ci upstream/nixos-unstable | cut -d' ' -f1)
+          fork_commit=$(git rev-parse origin/nixos-unstable 2>/dev/null || echo "none")
+
+          if [ "$fork_commit" != "none" ]; then
+            fork_date=$(git show -s --format=%ci origin/nixos-unstable | cut -d' ' -f1)
+          else
+            fork_date="N/A"
+          fi
+
+          echo "Upstream commit: $upstream_commit ($upstream_date)"
+          echo "Fork commit: $fork_commit ($fork_date)"
+
+          if [ "$upstream_commit" = "$fork_commit" ]; then
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "::notice::nixos-unstable is already up to date. Skipping patch application."
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "::notice::nixos-unstable has new commits. Proceeding with update."
+          fi
+      - name: Update nixos-unstable branch in fork
+        if: steps.check_update.outputs.needs_update == 'true'
+        run: |
+          git checkout -B nixos-unstable upstream/nixos-unstable
+          git push origin nixos-unstable --force
+      - name: Create and reset target branch
+        if: steps.check_update.outputs.needs_update == 'true'
+        run: |
+          git checkout -B channel/personal-stable upstream/nixos-unstable
+      - name: Apply PR patches
+        if: steps.check_update.outputs.needs_update == 'true'
+        run: |
+          failed_prs=()
+
+          echo '${{ env.PR_URLS }}' | while IFS= read pr_url; do
+            if ! curl -sL "${pr_url}.patch" | git am; then
+              echo "::error::Failed to apply $pr_url"
+              git am --abort
+              failed_prs+=("$pr_url")
+            else
+              echo "Successfully applied $pr_url"
+            fi
+          done
+
+          # Report failures at the end
+          if [ ${#failed_prs[@]} -gt 0 ]; then
+            echo "::error::The following PRs failed to apply:"
+            for failed_pr in "${failed_prs[@]}"; do
+              echo "::error::  - $failed_pr"
+            done
+            exit 1
+          fi
+      - name: Push patched branch
+        if: steps.check_update.outputs.needs_update == 'true'
+        run: |
+          git push origin channel/personal-stable --force
+      - name: Save Git cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .git
+          key: git-cache-${{ github.run_id }}
