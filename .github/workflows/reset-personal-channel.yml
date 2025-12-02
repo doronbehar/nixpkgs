@@ -1,0 +1,61 @@
+name: Reset Personal Channel
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/update-personal-stable.yml'
+
+jobs:
+  reset-channel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restore Git cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .git
+          key: git-cache-${{ github.run_id }}
+          restore-keys: |
+            git-cache-
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch nixos-unstable
+        run: |
+          git fetch origin nixos-unstable
+
+      - name: Reset nixos-unstable to previous commit
+        run: |
+          # Get the commit hash of nixos-unstable^
+          PREV_COMMIT=$(git rev-parse origin/nixos-unstable^)
+
+          echo "Resetting nixos-unstable to $PREV_COMMIT"
+
+          # Force push the previous commit
+          git push origin $PREV_COMMIT:refs/heads/nixos-unstable --force
+
+      - name: Save Git cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .git
+          key: git-cache-${{ github.run_id }}
+
+      - name: Trigger update-personal-stable workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'update-personal-stable.yml',
+              ref: 'channel/fork-master'
+            });
+            console.log('Triggered update-personal-stable.yml workflow');
