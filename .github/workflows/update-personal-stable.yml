@@ -16,6 +16,7 @@ env:
     https://github.com/NixOS/nixpkgs/pull/460010
     https://github.com/NixOS/nixpkgs/pull/466504
     https://github.com/NixOS/nixpkgs/pull/467091
+    https://github.com/NixOS/nixpkgs/pull/467132
 
 jobs:
   update-and-patch:
