@@ -11,7 +11,6 @@ env:
   PR_URLS: |
     https://github.com/NixOS/nixpkgs/pull/463389
     https://github.com/NixOS/nixpkgs/pull/454973
-    https://github.com/NixOS/nixpkgs/pull/456989
     https://github.com/NixOS/nixpkgs/pull/460010
     https://github.com/NixOS/nixpkgs/pull/467091
     https://github.com/NixOS/nixpkgs/pull/467132
