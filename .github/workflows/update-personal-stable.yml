@@ -10,14 +10,10 @@ env:
   # List of PR URLs to apply (one per line)
   PR_URLS: |
     https://github.com/NixOS/nixpkgs/pull/433777
-    https://github.com/NixOS/nixpkgs/pull/454973
     https://github.com/NixOS/nixpkgs/pull/460010
     https://github.com/NixOS/nixpkgs/pull/463389
     https://github.com/NixOS/nixpkgs/pull/467132
     https://github.com/NixOS/nixpkgs/pull/467169
-    https://github.com/NixOS/nixpkgs/pull/470821
-    https://github.com/NixOS/nixpkgs/pull/473576
-    https://github.com/NixOS/nixpkgs/pull/474745
 
 jobs:
   update-and-patch:
