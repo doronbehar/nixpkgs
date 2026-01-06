@@ -168,7 +168,11 @@ buildPythonPackage (finalAttrs: {
     # meson the proper cross compilation related arguments. See also:
     # https://docs.scipy.org/doc/scipy/building/cross_compilation.html
     "--cross-file=${finalAttrs.finalPackage.passthru.crossFile}"
+    # See https://scipy.github.io/devdocs/building/blas_lapack.html#bit-integer-ilp64-blas-lapack
+    "-Duse-ilp64=${if blas.isILP64 then "true" else "false"}"
     "-Duse-system-libraries=all"
+  ] ++ lib.optionals blas.isILP64 [
+    "-Dblas-symbol-suffix=_64"
   ];
 
   # disable stackprotector on aarch64-darwin for now
