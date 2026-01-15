@@ -267,6 +267,8 @@ stdenv.mkDerivation (finalAttrs: {
     tdb
   ];
 
+  strictDeps = true;
+
   preBuild = ''
     export MAKEFLAGS="-j $NIX_BUILD_CORES"
   '';
