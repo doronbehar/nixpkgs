@@ -1,14 +1,14 @@
 {
   lua,
   makeSetupHook,
-  makeWrapper,
+  pkgsBuildTarget,
 }:
 
 # defined in trivial-builders
 # imported as wrapLua in lua-packages.nix and passed to build-lua-derivation to be used as buildInput
 makeSetupHook {
   name = "wrap-lua-hook";
-  propagatedBuildInputs = [ makeWrapper ];
+  propagatedBuildInputs = [ pkgsBuildTarget.makeWrapper ];
   substitutions.executable = lua.interpreter;
   substitutions.lua = lua;
 } ./wrap.sh
