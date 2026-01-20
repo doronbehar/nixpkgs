@@ -35,7 +35,6 @@
   rpcsvc-proto,
   bash,
   python3Packages,
-  pkgsHostTarget,
   nixosTests,
   libiconv,
   testers,
@@ -114,10 +113,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     python3Packages.python
-    # Not `python3Packages.wrapPython` to workaround
-    # `python3Packages.wrapPython.__spliced.buildHost` having the wrong
-    # `pythonHost`. See https://github.com/NixOS/nixpkgs/issues/434307
-    pkgsHostTarget.python3Packages.wrapPython
+    python3Packages.wrapPython
     wafHook
     pkg-config
     bison
@@ -313,6 +309,15 @@ stdenv.mkDerivation (finalAttrs: {
 
     # Fix PYTHONPATH for some tools
     wrapPythonPrograms
+
+    # Samba does its own shebang patching, but uses build Python
+    find $out/bin -type f -executable | while read file; do
+      isScript "$file" || continue
+      substituteInPlace "$file" \
+        --replace-fail \
+          ${lib.getBin buildPackages.python3Packages.python} \
+          ${lib.getBin python3Packages.python}
+    done
   '';
 
   disallowedReferences = lib.optionals isCross [
