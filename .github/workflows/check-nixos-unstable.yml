@@ -1,0 +1,87 @@
+name: Check nixos-unstable for updates
+
+on:
+  schedule:
+    # Check for updates every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  check-and-trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restore Git cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .git
+          key: git-cache-${{ github.run_id }}
+          restore-keys: |
+            git-cache-
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote add upstream https://github.com/NixOS/nixpkgs.git || true
+          git fetch upstream nixos-unstable
+          git fetch origin nixos-unstable || true
+
+      - name: Check if nixos-unstable needs update
+        id: check_update
+        run: |
+          # Get commit hashes and dates
+          upstream_commit=$(git rev-parse upstream/nixos-unstable)
+          upstream_date=$(git show -s --format=%ci upstream/nixos-unstable | cut -d' ' -f1)
+          fork_commit=$(git rev-parse origin/nixos-unstable 2>/dev/null || echo "none")
+
+          if [ "$fork_commit" != "none" ]; then
+            fork_date=$(git show -s --format=%ci origin/nixos-unstable | cut -d' ' -f1)
+          else
+            fork_date="N/A"
+          fi
+
+          echo "Upstream commit: $upstream_commit ($upstream_date)"
+          echo "Fork commit: $fork_commit ($fork_date)"
+
+          if [ "$upstream_commit" = "$fork_commit" ]; then
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "::notice::nixos-unstable is already up to date. No update needed."
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "::notice::nixos-unstable has new commits. Will trigger update workflow."
+          fi
+
+      - name: Trigger update-personal-stable workflow
+        if: steps.check_update.outputs.needs_update == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'update-personal-stable.yml',
+              ref: 'channel/fork-master'
+            });
+            console.log('Triggered update-personal-stable.yml workflow');
+
+      - name: Skip if no update needed
+        if: steps.check_update.outputs.needs_update == 'false'
+        run: |
+          echo "No update needed - nixos-unstable is already up to date"
+          exit 0
+
+      - name: Save Git cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .git
+          key: git-cache-${{ github.run_id }}
