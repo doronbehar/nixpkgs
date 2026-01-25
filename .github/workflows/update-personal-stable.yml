@@ -1,9 +1,6 @@
 name: Auto-patch nixos-unstable with PRs
 
 on:
-  schedule:
-    # Check for updates every hour
-    - cron: '0 * * * *'
   workflow_dispatch: # Allow manual triggering
 
 env:
@@ -46,43 +43,15 @@ jobs:
         run: |
           git remote add upstream https://github.com/NixOS/nixpkgs.git || true
           git fetch upstream nixos-unstable
-          git fetch origin nixos-unstable || true
 
-      - name: Check if nixos-unstable needs update
-        id: check_update
-        run: |
-          # Get commit hashes and dates
-          upstream_commit=$(git rev-parse upstream/nixos-unstable)
-          upstream_date=$(git show -s --format=%ci upstream/nixos-unstable | cut -d' ' -f1)
-          fork_commit=$(git rev-parse origin/nixos-unstable 2>/dev/null || echo "none")
-
-          if [ "$fork_commit" != "none" ]; then
-            fork_date=$(git show -s --format=%ci origin/nixos-unstable | cut -d' ' -f1)
-          else
-            fork_date="N/A"
-          fi
-
-          echo "Upstream commit: $upstream_commit ($upstream_date)"
-          echo "Fork commit: $fork_commit ($fork_date)"
-
-          if [ "$upstream_commit" = "$fork_commit" ]; then
-            echo "needs_update=false" >> $GITHUB_OUTPUT
-            echo "::notice::nixos-unstable is already up to date. Skipping patch application."
-          else
-            echo "needs_update=true" >> $GITHUB_OUTPUT
-            echo "::notice::nixos-unstable has new commits. Proceeding with update."
-          fi
       - name: Update nixos-unstable branch in fork
-        if: steps.check_update.outputs.needs_update == 'true'
         run: |
           git checkout -B nixos-unstable upstream/nixos-unstable
           git push origin nixos-unstable --force
       - name: Create and reset target branch
-        if: steps.check_update.outputs.needs_update == 'true'
         run: |
           git checkout -B channel/personal-stable upstream/nixos-unstable
       - name: Apply PR patches
-        if: steps.check_update.outputs.needs_update == 'true'
         run: |
           failed_prs=()
 
@@ -105,7 +74,6 @@ jobs:
             exit 1
           fi
       - name: Push patched branch
-        if: steps.check_update.outputs.needs_update == 'true'
         run: |
           git push origin channel/personal-stable --force
       - name: Save Git cache
