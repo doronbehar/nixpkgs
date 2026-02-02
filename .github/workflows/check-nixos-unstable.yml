@@ -2,8 +2,8 @@ name: Check nixos-unstable for updates
 
 on:
   schedule:
-    # Check for updates every hour
-    - cron: '0 * * * *'
+    # Check for updates every 5 hours
+    - cron: '0 */5 * * *'
   workflow_dispatch: # Allow manual triggering
 
 jobs:
