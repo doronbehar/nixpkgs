@@ -23,7 +23,7 @@ buildGoModule (finalAttrs: {
 
   vendorHash = "sha256-uFXHoseFOxGIGPiWxWfDl339vUv855VHYgSs9rnDyuI=";
 
-  env.CGO_ENABLED = 0;
+  env.CGO_ENABLED = 1;
 
   outputs = [
     "out"
