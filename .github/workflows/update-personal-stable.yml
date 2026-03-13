@@ -46,6 +46,11 @@ jobs:
         run: |
           failed_prs=()
 
+          if [[ '${{ env.PR_URLS }}' == "" ]]; then
+            echo "No pull requests to apply!"
+            exit 0
+          fi
+
           echo '${{ env.PR_URLS }}' | while IFS= read pr_url; do
             if ! curl -sL "${pr_url}.patch" | git am; then
               echo "::error::Failed to apply $pr_url"
@@ -69,7 +74,7 @@ jobs:
           git push origin channel/personal-stable --force
       - name: Save Git cache
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .git
           key: git-cache-${{ github.run_id }}
