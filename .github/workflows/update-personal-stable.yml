@@ -14,14 +14,14 @@ jobs:
 
     steps:
       - name: Restore Git cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: .git
           key: git-cache-${{ github.run_id }}
           restore-keys: |
             git-cache-
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.PAT_TOKEN }}
 
