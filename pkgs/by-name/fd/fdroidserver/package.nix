@@ -11,6 +11,7 @@ let
   pythonPackages = python3Packages.overrideScope (
     self: super: {
       sqlalchemy = self.sqlalchemy_1_4;
+      ruamel-yaml = self.ruamel-yaml_0_17;
     }
   );
 in
@@ -81,13 +82,7 @@ pythonPackages.buildPythonApplication (finalAttrs: {
     pyyaml
     qrcode
     requests
-    (ruamel-yaml.overrideAttrs (old: {
-      src = fetchPypi {
-        pname = "ruamel.yaml";
-        version = "0.17.21";
-        hash = "sha256-i3zml6LyEnUqNcGsQURx3BbEJMlXO+SSa1b/P10jt68=";
-      };
-    }))
+    ruamel-yaml
     sdkmanager
     yamllint
   ];
