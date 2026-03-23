@@ -17073,6 +17073,8 @@ self: super: with self; {
 
   ruamel-yaml = callPackage ../development/python-modules/ruamel-yaml { };
 
+  ruamel-yaml_0_17 = callPackage ../development/python-modules/ruamel-yaml_0_17 { };
+
   ruamel-yaml-clib = callPackage ../development/python-modules/ruamel-yaml-clib { };
 
   ruamel-yaml-string = callPackage ../development/python-modules/ruamel-yaml-string { };
