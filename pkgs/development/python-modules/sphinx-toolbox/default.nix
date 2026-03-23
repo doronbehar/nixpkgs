@@ -32,6 +32,7 @@ buildPythonPackage (finalAttrs: {
     hash = "sha256-wwpPhsTCnpetsOuTN9NfUJPLlqRPScr/z31bxYqIt4E=";
   };
 
+  # See https://github.com/sphinx-toolbox/sphinx-toolbox/issues/189
   postPatch = ''
     substituteInPlace \
       requirements.txt PKG-INFO pyproject.toml \
