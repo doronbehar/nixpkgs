@@ -33,11 +33,10 @@ buildPythonPackage (finalAttrs: {
     hash = "sha256-rZRx7qTrNL1RfHUgWXeMjyvoDJyd+NM0iO9pHCBUSII=";
   };
 
-  # See https://github.com/sphinx-toolbox/sphinx-toolbox/issues/189
-  postPatch = ''
-    substituteInPlace requirements.txt \
-      --replace-fail "sphinx-tabs<3.4.7,>=1.2.1" "sphinx-tabs<=3.4.7,>=1.2.1"
-  '';
+  pythonRelaxDeps = [
+    # See https://github.com/sphinx-toolbox/sphinx-toolbox/issues/189
+    "sphinx-tabs"
+  ];
 
   build-system = [ whey ];
 
