@@ -1,6 +1,7 @@
 {
   buildPythonPackage,
   fetchPypi,
+  fetchpatch,
   setuptools,
   versioneer,
   sphinx,
@@ -17,6 +18,13 @@ buildPythonPackage rec {
     hash = "sha256-KDmp1PrMPE7M0wbAhpVUCREEK0bur83DID5tC6tAvHc=";
   };
 
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/Chilipp/autodocsumm/commit/0609701576308fb447b7ae449576dbce7e672e1a.patch";
+      hash = "sha256-Mmxd682cXk6a1LvSWaCY4RmuysMp5IEvlVSSwQJHRbQ=";
+    })
+  ];
+
   build-system = [ setuptools ];
 
   dependencies = [
@@ -31,7 +39,5 @@ buildPythonPackage rec {
     homepage = "https://github.com/Chilipp/autodocsumm";
     license = lib.licenses.asl20;
     maintainers = [ ];
-    # https://github.com/Chilipp/autodocsumm/issues/108
-    broken = lib.versionAtLeast sphinx.version "9.0";
   };
 }
