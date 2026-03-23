@@ -36,6 +36,10 @@ buildPythonPackage (finalAttrs: {
   pythonRelaxDeps = [
     # See https://github.com/sphinx-toolbox/sphinx-toolbox/issues/189
     "sphinx-tabs"
+    # TODO: Report upstream that everything is OK with versions higher then
+    # 0.18.16 of ruamel-yaml. See:
+    # https://github.com/sphinx-toolbox/sphinx-toolbox/commit/ef325995bbfcff6365ac3ca7bdbca430cfe78944
+    "ruamel.yaml"
   ];
 
   build-system = [ whey ];
