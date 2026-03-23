@@ -1,6 +1,6 @@
 {
   buildPythonPackage,
-  fetchPypi,
+  fetchFromGitHub,
   lib,
   whey,
   sphinx,
@@ -26,16 +26,16 @@ buildPythonPackage (finalAttrs: {
   version = "4.1.2";
   pyproject = true;
 
-  src = fetchPypi {
-    inherit (finalAttrs) version;
-    pname = "sphinx_toolbox";
-    hash = "sha256-wwpPhsTCnpetsOuTN9NfUJPLlqRPScr/z31bxYqIt4E=";
+  src = fetchFromGitHub {
+    owner = "sphinx-toolbox";
+    repo = "sphinx-toolbox";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-rZRx7qTrNL1RfHUgWXeMjyvoDJyd+NM0iO9pHCBUSII=";
   };
 
   # See https://github.com/sphinx-toolbox/sphinx-toolbox/issues/189
   postPatch = ''
-    substituteInPlace \
-      requirements.txt PKG-INFO pyproject.toml \
+    substituteInPlace requirements.txt \
       --replace-fail "sphinx-tabs<3.4.7,>=1.2.1" "sphinx-tabs<=3.4.7,>=1.2.1"
   '';
 
