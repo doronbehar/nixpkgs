@@ -10,6 +10,7 @@
   rustPlatform,
   rustc,
   cargo,
+  wrapGAppsHook3,
 
   # buildInputs
   qt6,
@@ -66,6 +67,7 @@ stdenv.mkDerivation (finalAttrs: {
     (python3.withPackages (ps: [
       ps.mistletoe
     ]))
+    wrapGAppsHook3 # needed for file dialogs
   ];
 
   buildInputs = [
