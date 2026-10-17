@@ -29,6 +29,7 @@ buildPythonPackage (finalAttrs: {
   pname = "bumps";
   version = "1.0.5";
   pyproject = true;
+  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "bumps";
