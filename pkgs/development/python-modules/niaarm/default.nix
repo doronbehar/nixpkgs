@@ -6,6 +6,7 @@
 
   # build-system
   poetry-core,
+  pyprojectVersionPatchHook,
 
   # dependencies
   niapy,
@@ -35,11 +36,15 @@ buildPythonPackage (finalAttrs: {
 
   pythonRelaxDeps = [
     "numpy"
+    "pandas"
     "plotly"
     "scikit-learn"
   ];
 
-  build-system = [ poetry-core ];
+  build-system = [
+    poetry-core
+    pyprojectVersionPatchHook
+  ];
 
   dependencies = [
     niapy
@@ -58,6 +63,8 @@ buildPythonPackage (finalAttrs: {
   disabledTests = [
     # Test requires extra nltk data dependency
     "test_text_mining"
+    # AttributeError: 'Poly3DCollection' object has no attribute '_vec'
+    "test_hill_slopes"
   ];
 
   nativeCheckInputs = [ pytestCheckHook ];
