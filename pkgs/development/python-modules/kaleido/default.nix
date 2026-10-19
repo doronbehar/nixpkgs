@@ -91,7 +91,7 @@ buildPythonPackage (finalAttrs: {
   meta = {
     description = "Fast static image export for web-based visualization libraries with zero dependencies";
     homepage = "https://github.com/plotly/Kaleido";
-    changelog = "https://github.com/plotly/Kaleido/releases";
+    changelog = "https://github.com/plotly/Kaleido/releases/tag/${finalAttrs.src.tag}";
     platforms = [
       "x86_64-linux"
       "aarch64-linux"
