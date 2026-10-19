@@ -17,7 +17,6 @@
   numpy,
   plotly,
   python-socketio,
-  python,
   scipy,
   versioningit,
 }:
@@ -51,7 +50,6 @@ buildPythonPackage (finalAttrs: {
     msgpack
     numpy
     plotly
-    python
     python-socketio
     scipy
     # mpld3 # not packaged
