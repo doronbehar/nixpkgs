@@ -13,6 +13,7 @@ buildPythonPackage (finalAttrs: {
   pname = "floret";
   version = "0.10.5";
   pyproject = true;
+  __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "explosion";
