@@ -1,7 +1,7 @@
 {
   lib,
   buildPythonPackage,
-  fetchPypi,
+  fetchFromGitHub,
 
   # build-system
   setuptools,
@@ -18,7 +18,11 @@
   plotly,
   python-socketio,
   scipy,
-  versioningit,
+  uncertainties,
+
+  # testing
+  pytestCheckHook,
+  pytest-cov-stub,
 }:
 
 buildPythonPackage (finalAttrs: {
@@ -26,10 +30,20 @@ buildPythonPackage (finalAttrs: {
   version = "1.0.5";
   pyproject = true;
 
-  src = fetchPypi {
-    inherit (finalAttrs) pname version;
-    hash = "sha256-mpfKnzG8TV364kE7VmWa2Rzc0/6mZOmMvczPEHEDqjo=";
+  src = fetchFromGitHub {
+    owner = "bumps";
+    repo = "bumps";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-s+SZRH53R5itCUww+lCxk7iEm4tgZcGkvIDyI12fKcY=";
   };
+
+  postPatch = ''
+    # Upstream uses versioningit to set the version
+    substituteInPlace pyproject.toml \
+      --replace-fail 'requires = ["setuptools", "versioningit"]' 'requires = ["setuptools"]'
+    sed -i '/^name =.*/a version = "${finalAttrs.version}"' pyproject.toml
+    sed -i "/dynamic =/d" pyproject.toml
+  '';
 
   pythonRemoveDeps = [
     "mpld3" # not packaged
@@ -37,7 +51,6 @@ buildPythonPackage (finalAttrs: {
 
   build-system = [
     setuptools
-    versioningit
   ];
 
   dependencies = [
@@ -52,11 +65,14 @@ buildPythonPackage (finalAttrs: {
     plotly
     python-socketio
     scipy
+    uncertainties
     # mpld3 # not packaged
   ];
 
-  # Module has no tests
-  doCheck = false;
+  nativeCheckInputs = [
+    pytestCheckHook
+    pytest-cov-stub
+  ];
 
   pythonImportsCheck = [ "bumps" ];
 
@@ -64,7 +80,7 @@ buildPythonPackage (finalAttrs: {
     description = "Data fitting with bayesian uncertainty analysis";
     mainProgram = "bumps";
     homepage = "https://bumps.readthedocs.io/";
-    changelog = "https://github.com/bumps/bumps/releases/tag/v${finalAttrs.version}";
+    changelog = "https://github.com/bumps/bumps/releases/tag/${finalAttrs.src.tag}";
     license = lib.licenses.publicDomain;
     maintainers = with lib.maintainers; [ rprospero ];
   };
