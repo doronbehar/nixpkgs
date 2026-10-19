@@ -18,13 +18,13 @@
   versioningit,
 }:
 
-buildPythonPackage rec {
+buildPythonPackage (finalAttrs: {
   pname = "bumps";
   version = "1.0.5";
   pyproject = true;
 
   src = fetchPypi {
-    inherit pname version;
+    inherit (finalAttrs) pname version;
     hash = "sha256-mpfKnzG8TV364kE7VmWa2Rzc0/6mZOmMvczPEHEDqjo=";
   };
 
@@ -62,8 +62,8 @@ buildPythonPackage rec {
     description = "Data fitting with bayesian uncertainty analysis";
     mainProgram = "bumps";
     homepage = "https://bumps.readthedocs.io/";
-    changelog = "https://github.com/bumps/bumps/releases/tag/v${version}";
+    changelog = "https://github.com/bumps/bumps/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.publicDomain;
     maintainers = with lib.maintainers; [ rprospero ];
   };
-}
+})
