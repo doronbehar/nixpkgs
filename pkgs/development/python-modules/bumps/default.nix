@@ -1,11 +1,16 @@
 {
   lib,
+  buildPythonPackage,
+  fetchPypi,
+
+  # build-system
+  setuptools,
+
+  # dependencies
   aiohttp,
   blinker,
-  buildPythonPackage,
   cloudpickle,
   dill,
-  fetchPypi,
   h5py,
   matplotlib,
   msgpack,
@@ -14,7 +19,6 @@
   python-socketio,
   python,
   scipy,
-  setuptools,
   versioningit,
 }:
 
