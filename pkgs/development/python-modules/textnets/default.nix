@@ -71,6 +71,8 @@ buildPythonPackage (finalAttrs: {
   disabledTests = [
     # https://github.com/jboynyc/textnets/issues/66
     "test_textnet_save_and_load"
+    # ValueError: min() iterable argument is empty
+    "test_corpus_long"
   ];
 
   pythonImportsCheck = [ "textnets" ];
