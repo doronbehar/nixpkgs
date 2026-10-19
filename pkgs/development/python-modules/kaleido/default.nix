@@ -99,6 +99,9 @@ buildPythonPackage (finalAttrs: {
     ];
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ]; # Trust me, I'm not happy. But after literal hours of trying to reverse-engineer their build system and getting nowhere, I'll use the stupid binaries >:(
     license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ pandapip1 ];
+    maintainers = with lib.maintainers; [
+      pandapip1
+      sarahec
+    ];
   };
 })
