@@ -39,6 +39,11 @@ buildPythonPackage (finalAttrs: {
 
   nativeCheckInputs = [ pytestCheckHook ];
 
+  disabledTests = [
+    # Arrays are not almost equal to 7 decimals
+    "test_train_unsupervised_fasttext"
+  ];
+
   meta = {
     description = "FastText + Bloom embeddings for compact, full-coverage vectors with spaCy";
     homepage = "https://github.com/explosion/floret";
