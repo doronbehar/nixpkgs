@@ -8,7 +8,7 @@ env:
   PR_URLS: |
     https://github.com/NixOS/nixpkgs/pull/577222
     https://github.com/NixOS/nixpkgs/pull/576411
-    https://github.com/NixOS/nixpkgs/pull/575865
+    https://github.com/NixOS/nixpkgs/pull/576950
 
 jobs:
   update-and-patch:
